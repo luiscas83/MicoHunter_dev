@@ -7,6 +7,7 @@
 # --- Código de la web ---
 !index.html
 !app.js
+!studio.js
 !cotos.js
 !cotos_poly.js
 !mup_extra.js
@@ -15,6 +16,7 @@
 !dark.css
 !musgo.css
 !nature.css
+!studio.css
 
 # --- Imágenes realmente referenciadas por la web ---
 !img/

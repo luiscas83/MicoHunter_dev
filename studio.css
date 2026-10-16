@@ -1,0 +1,636 @@
+/* MicoHunter — QUINTO estilo: «Observatorio» (studio.css)  v1.00
+   ============================================================================
+   Capa de presentación INDEPENDIENTE. Todas las reglas van acotadas a
+   html[data-mhstudio="on"], así que con el estilo apagado este archivo no
+   afecta absolutamente a nada: los cuatro temas viven igual que antes.
+
+   Concepto: observatorio micológico profesional (verde bosque + ámbar),
+   paneles de datos con bordes finos, tipografía con carácter (Fraunces) +
+   legible para datos (Inter) + monoespaciada para cifras (JetBrains Mono).
+   No define ninguna lógica: solo viste el DOM real de la app.
+   ========================================================================== */
+
+html[data-mhstudio="on"]{
+  --st-bg:#0d1b12; --st-bg2:#132419; --st-bg3:#1a2f21;
+  --st-card:#16281c; --st-card2:#1b3122;
+  --st-line:#243d2c; --st-line2:#1e3527;
+  --st-amber:#e8b341; --st-amber2:#f5c95c;
+  --st-liquen:#6ba368; --st-terra:#c4553b; --st-violet:#7b4b94;
+  --st-text:#e8f0e8; --st-muted:#93a998; --st-dim:#7f9484;
+  --st-head:72px; --st-headpx:72px; --st-side:250px;
+  --st-radius:14px; --st-radius-sm:10px;
+  --st-serif:'Fraunces',Georgia,serif;
+  --st-sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --st-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* Puente con las variables que usa el DOM real de la app */
+  --primary:#e8b341; --primary-light:#f5c95c; --primary-ink:#f0d79a;
+  --secondary:#c98b2e; --accent:#e8b341;
+  --bg:#0d1b12; --bg-subtle:#132419; --card-bg:#16281c;
+  --text:#e8f0e8; --text-light:#93a998; --border:#243d2c;
+  --success:#7fb069; --warning:#e8b341; --danger:#e06a4a; --info:#b48fc9;
+  --shadow:none; --shadow-hover:none;
+  --radius:14px; --radius-sm:10px;
+  color-scheme:dark;
+}
+
+/* ── Lienzo ──────────────────────────────────────────────────────────── */
+html[data-mhstudio="on"] body{
+  font-family:var(--st-sans);
+  background:var(--st-bg);
+  color:var(--st-text);
+  line-height:1.6;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(123,75,148,.10) 0%, transparent 42%),
+    radial-gradient(circle at 88% 78%, rgba(232,179,65,.07) 0%, transparent 44%);
+  background-attachment:fixed;
+}
+html[data-mhstudio="on"] ::selection{background:rgba(232,179,65,.28);color:#fff}
+
+/* ── Barra superior ──────────────────────────────────────────────────── */
+html[data-mhstudio="on"] .header{
+  position:sticky; top:0; z-index:1000;
+  padding:10px 22px; margin:0 0 18px;
+  background:rgba(13,27,18,.88);
+  -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--st-line);
+  color:var(--st-text);
+  background-image:none;
+}
+html[data-mhstudio="on"] .header-inner{
+  max-width:1600px; margin:0 auto;
+  display:flex; align-items:center; gap:16px; flex-wrap:nowrap;
+}
+html[data-mhstudio="on"] .logo{display:flex;align-items:center;gap:12px;min-width:0}
+html[data-mhstudio="on"] .logo h1{
+  font-family:var(--st-serif); font-size:1.2rem; font-weight:700;
+  letter-spacing:.2px; color:var(--st-amber); line-height:1.1;
+}
+html[data-mhstudio="on"] .logo h1::after{
+  content:"· observatorio"; font-family:var(--st-sans); font-weight:400;
+  font-size:.62rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--st-dim); margin-left:6px;
+}
+html[data-mhstudio="on"] .version{color:var(--st-dim);letter-spacing:.12em}
+html[data-mhstudio="on"] img.logo-icon{width:42px;height:42px;border-radius:12px;box-shadow:none;border:1px solid var(--st-line)}
+html[data-mhstudio="on"] .menu-btn{
+  display:none;
+  background:var(--st-bg2); border:1px solid var(--st-line);
+  color:var(--st-text); border-radius:9px;
+}
+html[data-mhstudio="on"] .menu-btn:hover{border-color:var(--st-amber);color:var(--st-amber)}
+
+/* Buscador real (movido a la barra) + resultados desplegables */
+html[data-mhstudio="on"] .st-tools{display:flex;align-items:center;gap:12px;margin-left:auto;min-width:0;flex:1 1 auto;justify-content:flex-end}
+html[data-mhstudio="on"] .st-search{position:relative;flex:1 1 380px;max-width:440px;min-width:0}
+html[data-mhstudio="on"] .st-search .search-row{margin:0}
+html[data-mhstudio="on"] .st-search .search-row input{
+  width:100%; padding:9px 14px; background:var(--st-bg2);
+  border:1px solid var(--st-line); border-radius:var(--st-radius-sm);
+  color:var(--st-text); font-family:var(--st-sans); font-size:.86rem;
+}
+html[data-mhstudio="on"] .st-search .search-row input::placeholder{color:var(--st-dim)}
+html[data-mhstudio="on"] .st-search .search-row input:focus{
+  outline:none; border-color:var(--st-amber);
+  box-shadow:0 0 0 3px rgba(232,179,65,.12);
+}
+html[data-mhstudio="on"] .st-search .search-row .btn{align-self:stretch;flex:0 0 auto;padding:9px 16px;min-height:0}
+html[data-mhstudio="on"] #results{
+  position:absolute; top:calc(100% + 8px); left:0; right:0; z-index:1400;
+  margin:0; padding:6px; gap:4px;
+  background:var(--st-bg2); border:1px solid var(--st-line);
+  border-radius:var(--st-radius-sm); box-shadow:0 18px 40px rgba(0,0,0,.55);
+}
+html[data-mhstudio="on"] #results:empty{display:none}
+html[data-mhstudio="on"] #results button{
+  background:transparent; border:1px solid transparent; border-radius:8px;
+  color:var(--st-text); padding:9px 11px; font-size:.83rem; text-align:left;
+}
+html[data-mhstudio="on"] #results button:hover{background:var(--st-bg3);border-color:var(--st-line)}
+html[data-mhstudio="on"] #favSelect{
+  width:auto; max-width:250px; margin:0; padding:9px 12px;
+  background:var(--st-bg2); border:1px solid var(--st-line);
+  border-radius:var(--st-radius-sm); color:var(--st-text);
+  font-family:var(--st-mono); font-size:.78rem; cursor:pointer;
+}
+html[data-mhstudio="on"] #favSelect:focus{outline:none;border-color:var(--st-amber)}
+html[data-mhstudio="on"] .map-card #favSelect{
+  width:100%; max-width:none; margin:0 0 10px; font-family:var(--st-sans); font-size:.85rem;
+}
+
+/* Botón de alternancia (también con el estilo apagado: ver bloque .st-toggle) */
+.st-toggle{
+  display:inline-flex; align-items:center; gap:8px; flex:0 0 auto;
+  padding:9px 14px; min-height:0; cursor:pointer;
+  background:rgba(255,255,255,.12); color:#fff;
+  border:1px solid rgba(255,255,255,.42); border-radius:999px;
+  font-family:inherit; font-size:.82rem; font-weight:600; letter-spacing:.02em;
+  transition:background .18s ease, border-color .18s ease, color .18s ease;
+  white-space:nowrap;
+}
+.st-toggle:hover{background:rgba(255,255,255,.22)}
+.st-toggle:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:2px}
+.st-toggle-ico{font-size:1rem;line-height:1}
+html[data-mhstudio="on"] .st-toggle{
+  background:rgba(232,179,65,.14); color:var(--st-amber);
+  border-color:rgba(232,179,65,.45);
+}
+html[data-mhstudio="on"] .st-toggle:hover{background:rgba(232,179,65,.24)}
+
+/* ── Barra lateral (el menú real, reordenado) ────────────────────────── */
+html[data-mhstudio="on"] .st-sidebar{
+  position:fixed; left:0; top:0; bottom:0; width:var(--st-side); z-index:900;
+  padding:calc(var(--st-headpx) + 14px) 12px 18px;
+  background:var(--st-bg2); border-right:1px solid var(--st-line);
+  overflow-y:auto; overscroll-behavior:contain;
+}
+html[data-mhstudio="on"] .st-sidebar-inner{display:flex;flex-direction:column;gap:4px}
+html[data-mhstudio="on"] .st-sidebar::after{
+  content:"MicoHunter · motor de fructificación";
+  margin-top:auto; padding:18px 12px 0; display:block;
+  font-family:var(--st-mono); font-size:.62rem; line-height:1.7;
+  letter-spacing:.06em; color:var(--st-dim); opacity:.75;
+}
+html[data-mhstudio="on"] .st-navsec{
+  font-size:.62rem; text-transform:uppercase; letter-spacing:.18em;
+  color:var(--st-dim); font-weight:700; padding:16px 12px 6px;
+}
+html[data-mhstudio="on"] .menu-panel{
+  position:static; display:flex; flex-direction:column; gap:4px;
+  min-width:0; width:100%; padding:0; margin:0;
+  background:none; border:none; border-radius:0; box-shadow:none;
+}
+html[data-mhstudio="on"] .menu-panel[hidden]{display:flex}
+html[data-mhstudio="on"] .nav-btn{
+  display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+  padding:11px 13px; border:1px solid transparent; border-radius:var(--st-radius-sm);
+  background:transparent; color:var(--st-muted);
+  font-family:var(--st-sans); font-size:.87rem; font-weight:500;
+  border-left:2px solid transparent; transition:background .15s,color .15s,border-color .15s;
+}
+html[data-mhstudio="on"] .nav-btn:hover{background:var(--st-bg3);color:var(--st-text)}
+html[data-mhstudio="on"] .nav-btn.active{
+  background:linear-gradient(90deg,rgba(232,179,65,.14),transparent);
+  color:var(--st-amber); border-left-color:var(--st-amber);
+}
+html[data-mhstudio="on"] .menu-theme{
+  margin-top:14px; padding:12px; border-top:1px solid var(--st-line);
+  color:var(--st-muted); font-size:.82rem; flex-wrap:wrap; row-gap:5px;
+}
+html[data-mhstudio="on"] .menu-theme::after{
+  content:"Se aplica al salir del observatorio"; flex:1 1 100%;
+  font-size:.62rem; letter-spacing:.05em; color:var(--st-dim); font-weight:400;
+}
+html[data-mhstudio="on"] .theme-select{
+  flex:1; min-width:0; padding:9px 12px; min-height:0;
+  background:var(--st-bg3); border:1px solid var(--st-line);
+  border-radius:var(--st-radius-sm); color:var(--st-text);
+  font-family:var(--st-mono); font-size:.76rem;
+}
+html[data-mhstudio="on"] .theme-select:focus{outline:none;border-color:var(--st-amber)}
+
+/* ── Contenido ───────────────────────────────────────────────────────── */
+html[data-mhstudio="on"] .main{
+  max-width:1580px; margin:0 0 0 var(--st-side); padding:0 26px;
+}
+html[data-mhstudio="on"] .section-head h2{
+  font-family:var(--st-serif); font-size:1.45rem; font-weight:600; letter-spacing:.2px;
+}
+html[data-mhstudio="on"] .section-head p{color:var(--st-muted);max-width:74ch}
+
+html[data-mhstudio="on"] .card{
+  background:var(--st-card); border:1px solid var(--st-line);
+  border-radius:var(--st-radius); padding:20px; box-shadow:none;
+}
+html[data-mhstudio="on"] .card h2{
+  font-family:var(--st-serif); font-size:1.15rem; font-weight:600; letter-spacing:.2px;
+}
+html[data-mhstudio="on"] .card h3{
+  font-family:var(--st-sans); font-size:.74rem; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--st-muted); margin-bottom:14px;
+}
+html[data-mhstudio="on"] .card code{
+  background:var(--st-bg3); color:var(--st-amber);
+  font-family:var(--st-mono); font-size:.82em; border:1px solid var(--st-line2);
+}
+html[data-mhstudio="on"] .mt-20{margin-top:16px}
+
+/* ── Composición del dashboard ───────────────────────────────────────── */
+html[data-mhstudio="on"] .dashboard-grid{
+  grid-template-columns:minmax(320px,360px) minmax(0,1fr);
+  gap:16px; align-items:start;
+}
+html[data-mhstudio="on"] .dashboard-grid #dataWarn{grid-column:1/-1;grid-row:1}
+html[data-mhstudio="on"] .dashboard-grid .st-ctx{grid-column:1/-1;grid-row:2}
+html[data-mhstudio="on"] .dashboard-grid .st-hero{grid-column:1;grid-row:3}
+html[data-mhstudio="on"] .dashboard-grid .terrain-card{grid-column:1;grid-row:4;height:auto;align-self:start}
+html[data-mhstudio="on"] .dashboard-grid .map-card{
+  grid-column:2; grid-row:3 / span 2; display:flex; flex-direction:column; min-width:0;
+}
+html[data-mhstudio="on"] .dashboard-grid .mushroom-cards-grid{grid-column:1/-1;grid-row:5}
+html[data-mhstudio="on"] .dashboard-grid .hint-text{grid-column:1/-1;grid-row:6}
+
+/* Franja de contexto */
+html[data-mhstudio="on"] .st-ctx{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:14px 18px;
+  background:linear-gradient(180deg,var(--st-card2),var(--st-card));
+  border:1px solid var(--st-line); border-radius:var(--st-radius);
+}
+html[data-mhstudio="on"] .st-ctx-place{
+  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  font-family:var(--st-serif); font-size:1.5rem; font-weight:600;
+  letter-spacing:.2px; margin:0; min-width:0;
+}
+html[data-mhstudio="on"] .st-ctx-pin{font-size:1.15rem;align-self:center}
+html[data-mhstudio="on"] .st-ctx-coords{
+  font-family:var(--st-mono); font-size:.76rem; font-weight:400;
+  letter-spacing:.02em; color:var(--st-muted);
+}
+html[data-mhstudio="on"] .st-ctx-pills{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+
+/* Píldoras de dato */
+html[data-mhstudio="on"] .st-pill{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 11px; border:1px solid var(--st-line); border-radius:999px;
+  background:var(--st-bg2); font-size:.74rem; color:var(--st-muted);
+}
+html[data-mhstudio="on"] .st-pill b{
+  font-family:var(--st-mono); font-weight:600; color:var(--st-text); letter-spacing:.01em;
+}
+html[data-mhstudio="on"] .st-pill-ico{font-size:.86rem;line-height:1}
+html[data-mhstudio="on"] .st-pill-lbl{color:var(--st-dim)}
+
+/* Medidor de potencial (hero) */
+html[data-mhstudio="on"] .st-hero{
+  display:flex; flex-direction:column; align-items:center; gap:14px;
+  padding:22px 18px; text-align:center;
+  background:radial-gradient(120% 90% at 50% 0%,var(--st-card2),var(--st-card));
+  border:1px solid var(--st-line); border-radius:var(--st-radius);
+}
+html[data-mhstudio="on"] .st-gauge{position:relative;width:186px;height:186px}
+html[data-mhstudio="on"] .st-gauge svg{width:100%;height:100%;transform:rotate(-90deg);display:block}
+html[data-mhstudio="on"] .st-gauge-bg{fill:none;stroke:var(--st-bg3);stroke-width:9}
+html[data-mhstudio="on"] .st-gauge-fill{
+  fill:none;stroke:var(--st-amber);stroke-width:9;stroke-linecap:round;
+  stroke-dasharray:0 277; transition:stroke-dasharray .9s ease;
+}
+html[data-mhstudio="on"] .st-gauge-val{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+}
+html[data-mhstudio="on"] .st-gauge-num{
+  font-family:var(--st-mono); font-size:2.7rem; font-weight:700; line-height:1;
+  color:var(--st-amber); font-variant-numeric:tabular-nums;
+}
+html[data-mhstudio="on"] .st-gauge-unit{
+  font-family:var(--st-mono); font-size:.74rem; color:var(--st-dim); margin-top:2px;
+}
+html[data-mhstudio="on"] .st-gauge-lbl{
+  margin-top:7px; font-size:.64rem; font-weight:700; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--st-liquen);
+}
+html[data-mhstudio="on"] .st-hero-info{display:flex;flex-direction:column;gap:9px;width:100%}
+html[data-mhstudio="on"] .st-hero-title{
+  font-size:.64rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--st-muted);
+}
+html[data-mhstudio="on"] .st-hero-species{
+  font-family:var(--st-serif); font-size:1.1rem; font-weight:600;
+  font-style:italic; color:var(--st-text); line-height:1.3;
+}
+html[data-mhstudio="on"] .st-hero-banner{
+  font-size:.82rem; color:var(--st-amber); line-height:1.55;
+  padding:9px 11px; border-radius:var(--st-radius-sm);
+  background:rgba(232,179,65,.08); border:1px solid rgba(232,179,65,.22);
+}
+html[data-mhstudio="on"] .st-hero-banner:empty{display:none}
+html[data-mhstudio="on"] .st-hero-pills{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+html[data-mhstudio="on"] .st-hero-note{
+  font-size:.68rem; color:var(--st-dim); line-height:1.5;
+}
+
+/* ── Panel de suelo y clima → filas de motor ─────────────────────────── */
+html[data-mhstudio="on"] .terrain-card h3{margin-bottom:10px}
+html[data-mhstudio="on"] .terrain-list{display:flex;flex-direction:column;gap:6px}
+html[data-mhstudio="on"] .terrain-item{
+  grid-template-columns:30px minmax(0,1fr);
+  column-gap:11px; padding:9px 11px;
+  background:var(--st-bg2); border:1px solid var(--st-line);
+  border-radius:var(--st-radius-sm); border-bottom:1px solid var(--st-line);
+}
+html[data-mhstudio="on"] .terrain-item:last-child{border-bottom:1px solid var(--st-line)}
+html[data-mhstudio="on"] .terrain-item .ti{font-size:.95rem}
+html[data-mhstudio="on"] .terrain-item .tl{
+  font-size:.62rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--st-dim); margin-bottom:2px;
+}
+html[data-mhstudio="on"] .terrain-item .tv{
+  font-family:var(--st-mono); font-size:.84rem; font-weight:600;
+  color:var(--st-text); letter-spacing:.01em;
+}
+html[data-mhstudio="on"] .last-update{
+  margin-top:12px; font-size:.72rem; color:var(--st-dim); text-align:left;
+  font-family:var(--st-mono);
+}
+
+/* ── Tarjetas de especie ─────────────────────────────────────────────── */
+html[data-mhstudio="on"] .mushroom-cards-grid{gap:14px}
+html[data-mhstudio="on"] #mushroomCards{grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
+html[data-mhstudio="on"] .mushroom-card{
+  text-align:left; padding:18px;
+  background:var(--st-card); border:1px solid var(--st-line);
+}
+html[data-mhstudio="on"] .mushroom-card:hover{border-color:#345234}
+html[data-mhstudio="on"] .mushroom-title-section{align-items:center;margin-bottom:14px;gap:12px}
+html[data-mhstudio="on"] .mushroom-photo{
+  width:56px; height:56px; border-radius:50%;
+  box-shadow:none; border:1px solid var(--st-line);
+  filter:saturate(.92);
+}
+html[data-mhstudio="on"] .mushroom-name{
+  font-family:var(--st-serif); font-size:1.06rem; font-weight:600; font-style:italic;
+  letter-spacing:.1px;
+}
+html[data-mhstudio="on"] .mushroom-scientific{color:var(--st-muted);font-size:.76rem}
+html[data-mhstudio="on"] .probability-ring{width:132px;height:132px;margin:4px auto 14px}
+html[data-mhstudio="on"] .ring-bg{stroke:var(--st-bg3);stroke-width:7}
+html[data-mhstudio="on"] .ring-fill{stroke-width:7;stroke-linecap:round}
+html[data-mhstudio="on"] .ring-text .percentage{
+  font-family:var(--st-mono); font-size:1.85rem; font-weight:700;
+  color:var(--st-text); font-variant-numeric:tabular-nums; line-height:1;
+}
+html[data-mhstudio="on"] .ring-text .label{
+  font-size:.6rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--st-muted); max-width:92px; margin-top:5px;
+}
+html[data-mhstudio="on"] .prediction-banner{
+  border-radius:var(--st-radius-sm); font-size:.8rem; font-weight:500;
+  text-align:left; padding:10px 12px; margin-bottom:10px; border-width:1px;
+  border-style:solid;
+}
+html[data-mhstudio="on"] .prediction-text{text-align:left}
+html[data-mhstudio="on"] .prediction-banner.nivel-alto{background:rgba(107,163,104,.13);color:#9ccf95;border-color:rgba(107,163,104,.42)}
+html[data-mhstudio="on"] .prediction-banner.nivel-medio{background:rgba(107,163,104,.10);color:#9ccf95;border-color:rgba(107,163,104,.34)}
+html[data-mhstudio="on"] .prediction-banner.nivel-bajo{background:rgba(232,179,65,.12);color:var(--st-amber);border-color:rgba(232,179,65,.38)}
+html[data-mhstudio="on"] .prediction-banner.nivel-nulo{background:rgba(196,85,59,.13);color:#e08a72;border-color:rgba(196,85,59,.4)}
+html[data-mhstudio="on"] .porque{
+  font-size:.75rem; color:var(--st-muted); margin:-2px 0 12px; line-height:1.55;
+}
+html[data-mhstudio="on"] .conditions-list{
+  display:grid; grid-template-columns:1fr; gap:2px;
+  padding:10px; background:var(--st-bg2); border:1px solid var(--st-line);
+  border-radius:var(--st-radius-sm);
+}
+html[data-mhstudio="on"] .condition-item{
+  padding:5px 2px; border-bottom:1px solid var(--st-line2); font-size:.78rem;
+  color:var(--st-muted); gap:10px;
+}
+html[data-mhstudio="on"] .condition-item:last-child{border-bottom:none}
+html[data-mhstudio="on"] .condition-value{
+  font-family:var(--st-mono); font-weight:600; color:var(--st-text);
+}
+html[data-mhstudio="on"] .target{color:var(--st-dim);font-size:.68rem;letter-spacing:.01em}
+html[data-mhstudio="on"] .mushroom-details{
+  margin-top:14px; padding-top:14px; border-top:1px solid var(--st-line);
+}
+html[data-mhstudio="on"] .mushroom-detail-item{
+  padding:5px 0; border-bottom:1px solid var(--st-line2); font-size:.76rem;
+}
+html[data-mhstudio="on"] .mushroom-detail-label{color:var(--st-dim)}
+html[data-mhstudio="on"] .mushroom-detail-value{
+  font-family:var(--st-mono); font-weight:600; color:var(--st-text);
+}
+html[data-mhstudio="on"] .details-flush{border-top:none;padding-top:0;margin-top:0}
+html[data-mhstudio="on"] .lv-ok{color:var(--st-liquen)!important}
+html[data-mhstudio="on"] .lv-mid{color:var(--st-amber)!important}
+html[data-mhstudio="on"] .lv-bad{color:#e08a72!important}
+html[data-mhstudio="on"] .hint-text{
+  color:var(--st-muted); font-style:normal; font-family:var(--st-mono);
+  font-size:.72rem; letter-spacing:.01em; margin-top:4px;
+}
+html[data-mhstudio="on"] .alert-box{
+  background:rgba(196,85,59,.14); color:#e79a83; border:1px solid rgba(196,85,59,.4);
+  border-radius:var(--st-radius-sm); padding:11px 13px; font-size:.8rem;
+}
+
+/* ── Tablas de datos (meteorología) ──────────────────────────────────── */
+html[data-mhstudio="on"] .param-table{font-size:.79rem;border-collapse:collapse}
+html[data-mhstudio="on"] .param-table th{
+  border-bottom:1px solid var(--st-amber); color:var(--st-muted);
+  font-size:.64rem; letter-spacing:.12em; text-transform:uppercase; font-weight:700;
+}
+html[data-mhstudio="on"] .param-table td{
+  border-bottom:1px solid var(--st-line2); color:var(--st-muted);
+  font-family:var(--st-mono); font-variant-numeric:tabular-nums;
+}
+html[data-mhstudio="on"] .param-table tbody tr:hover td{background:rgba(255,255,255,.025);color:var(--st-text)}
+
+/* ── Setales y cotos ─────────────────────────────────────────────────── */
+html[data-mhstudio="on"] .favorites-list{gap:10px}
+html[data-mhstudio="on"] .favorite-item{
+  background:var(--st-bg2); border:1px solid var(--st-line);
+  border-radius:var(--st-radius-sm); padding:14px; gap:14px;
+}
+html[data-mhstudio="on"] .favorite-item:hover{border-color:#345234}
+html[data-mhstudio="on"] .favorite-icon{
+  width:38px; height:38px; display:grid; place-items:center; flex:0 0 auto;
+  background:rgba(232,179,65,.1); border-radius:10px; font-size:1.1rem;
+}
+html[data-mhstudio="on"] .favorite-name{font-family:var(--st-sans);font-size:.96rem;font-weight:600}
+html[data-mhstudio="on"] .favorite-coords,
+html[data-mhstudio="on"] .coto-detail{
+  color:var(--st-muted); font-size:.76rem; font-family:var(--st-mono);
+}
+html[data-mhstudio="on"] .coto-detail small{color:var(--st-dim)}
+html[data-mhstudio="on"] .favorite-btn{
+  border-radius:8px; font-size:.78rem; font-weight:600; padding:7px 12px;
+}
+html[data-mhstudio="on"] .favorite-btn.load{background:var(--st-amber);color:#0d1b12}
+html[data-mhstudio="on"] .favorite-btn.load:hover{background:var(--st-amber2)}
+html[data-mhstudio="on"] .favorite-btn.delete{background:rgba(196,85,59,.16);color:#e79a83}
+html[data-mhstudio="on"] .count-badge{background:var(--st-amber);color:#0d1b12;font-family:var(--st-mono)}
+
+/* ── Controles ───────────────────────────────────────────────────────── */
+html[data-mhstudio="on"] .btn{
+  background:var(--st-amber); color:#0d1b12; border:1px solid var(--st-amber);
+  border-radius:var(--st-radius-sm); font-weight:600; font-size:.85rem;
+  letter-spacing:.01em;
+}
+html[data-mhstudio="on"] .btn:hover{background:var(--st-amber2);border-color:var(--st-amber2)}
+html[data-mhstudio="on"] .btn:active{transform:translateY(1px)}
+html[data-mhstudio="on"] .btn-ghost{
+  background:transparent; color:var(--st-muted); border:1px solid var(--st-line);
+}
+html[data-mhstudio="on"] .btn-ghost:hover{background:var(--st-bg3);color:var(--st-text);border-color:#345234}
+html[data-mhstudio="on"] .map-actions .btn{font-size:.8rem}
+html[data-mhstudio="on"] .save-fav-panel{
+  background:var(--st-bg2); border:1px solid var(--st-line); border-radius:var(--st-radius-sm);
+}
+html[data-mhstudio="on"] .save-fav-label{color:var(--st-muted);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+html[data-mhstudio="on"] .save-fav-row input,
+html[data-mhstudio="on"] .add-fav-row input,
+html[data-mhstudio="on"] .add-fav-row select{
+  background:var(--st-bg2); border:1px solid var(--st-line);
+  border-radius:var(--st-radius-sm); color:var(--st-text); font-family:var(--st-sans);
+}
+html[data-mhstudio="on"] .save-fav-coords{font-family:var(--st-mono);color:var(--st-muted)}
+html[data-mhstudio="on"] .map-card{display:flex;flex-direction:column}
+html[data-mhstudio="on"] .map-card .map{
+  flex:1 1 auto; min-height:min(66vh,560px);
+  border:1px solid var(--st-line); border-radius:var(--st-radius-sm);
+  background:var(--st-bg3);
+}
+html[data-mhstudio="on"] .leaflet-popup-content-wrapper{
+  background:var(--st-bg2); color:var(--st-text);
+  border:1px solid var(--st-line); border-radius:var(--st-radius-sm); box-shadow:0 18px 40px rgba(0,0,0,.5);
+}
+html[data-mhstudio="on"] .leaflet-popup-tip{background:var(--st-bg2)}
+html[data-mhstudio="on"] .leaflet-popup-close-button{color:var(--st-muted)}
+html[data-mhstudio="on"] .leaflet-container{background:var(--st-bg3);font-family:var(--st-sans)}
+
+/* ── Selector de especies ────────────────────────────────────────────── */
+html[data-mhstudio="on"] #fichaGrid{grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+html[data-mhstudio="on"] #fichaGrid .card{box-shadow:none}
+html[data-mhstudio="on"] .mushroom-selector{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+html[data-mhstudio="on"] .mushroom-option{
+  background:var(--st-bg2); border:1px solid var(--st-line);
+  border-radius:var(--st-radius-sm); padding:13px 15px;
+}
+html[data-mhstudio="on"] .mushroom-option:hover{border-color:#345234}
+html[data-mhstudio="on"] .mushroom-option.selected{
+  border-color:rgba(232,179,65,.5); background:rgba(232,179,65,.06);
+}
+html[data-mhstudio="on"] .mushroom-option input[type=checkbox]{accent-color:var(--st-amber)}
+html[data-mhstudio="on"] .mushroom-option-name{color:var(--st-text)}
+html[data-mhstudio="on"] .mushroom-option-scientific{color:var(--st-muted)}
+html[data-mhstudio="on"] .mushroom-option-info{display:flex;flex-direction:column;gap:2px}
+html[data-mhstudio="on"] .mushroom-option-info br{display:none}
+html[data-mhstudio="on"] .sp-status{color:var(--st-dim);font-size:.7rem;margin-top:2px}
+html[data-mhstudio="on"] .sp-dot{border:2px solid rgba(255,255,255,.22)}
+html[data-mhstudio="on"] .ficha-section>h3{
+  font-family:var(--st-sans); font-size:.74rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--st-muted);
+}
+html[data-mhstudio="on"] .ficha-p{color:var(--st-muted);font-size:.85rem;line-height:1.7}
+html[data-mhstudio="on"] .ficha-p strong{color:var(--st-text)}
+html[data-mhstudio="on"] .toxi-box{
+  background:rgba(196,85,59,.11); border:1px solid rgba(196,85,59,.34);
+  border-radius:var(--st-radius-sm); color:var(--st-muted); font-size:.82rem;
+}
+html[data-mhstudio="on"] .toxi-box strong{color:#e79a83}
+
+/* ── Metodología y leyenda ───────────────────────────────────────────── */
+html[data-mhstudio="on"] .method-list{color:var(--st-muted)}
+html[data-mhstudio="on"] .method-list strong{color:var(--st-text)}
+html[data-mhstudio="on"] .hint{
+  background:var(--st-bg2); border-left:2px solid var(--st-amber);
+  border-radius:0 var(--st-radius-sm) var(--st-radius-sm) 0; color:var(--st-muted);
+}
+html[data-mhstudio="on"] #guia .card>h4,html[data-mhstudio="on"] #leyenda .card>h4{
+  font-family:var(--st-serif); color:var(--st-amber); font-size:1.02rem; font-weight:600;
+}
+html[data-mhstudio="on"] #guia .card>p,html[data-mhstudio="on"] #leyenda .card>p{color:var(--st-muted)}
+html[data-mhstudio="on"] .glossary dt{color:var(--st-text)}
+html[data-mhstudio="on"] .glossary dd{
+  border-left:2px solid var(--st-line); color:var(--st-muted);
+}
+html[data-mhstudio="on"] .glossary dd strong,html[data-mhstudio="on"] .glossary dd code{color:var(--st-text)}
+html[data-mhstudio="on"] .indice-badge{
+  font-family:var(--st-mono); border:1px solid transparent; font-weight:600;
+}
+html[data-mhstudio="on"] .indice-badge.nivel-alto{background:rgba(107,163,104,.16);color:#9ccf95;border-color:rgba(107,163,104,.4)}
+html[data-mhstudio="on"] .indice-badge.nivel-medio{background:rgba(232,179,65,.14);color:var(--st-amber);border-color:rgba(232,179,65,.36)}
+html[data-mhstudio="on"] .indice-badge.nivel-bajo{background:rgba(196,85,59,.14);color:#e79a83;border-color:rgba(196,85,59,.36)}
+html[data-mhstudio="on"] .indice-badge.nivel-nulo{background:var(--st-bg3);color:var(--st-dim);border-color:var(--st-line)}
+
+/* ── Carga y pie ─────────────────────────────────────────────────────── */
+html[data-mhstudio="on"] .loader{
+  background:rgba(6,14,9,.78); color:var(--st-text);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+}
+html[data-mhstudio="on"] .loader p{
+  background:var(--st-bg2); border:1px solid var(--st-line);
+  border-radius:999px; font-family:var(--st-mono); font-size:.78rem;
+}
+html[data-mhstudio="on"] .loading-spinner{
+  border:3px solid var(--st-line); border-top-color:var(--st-amber);
+}
+html[data-mhstudio="on"] .footer{
+  border-top:1px solid var(--st-line); color:var(--st-dim);
+  font-size:.78rem; padding:26px 20px;
+  margin-left:var(--st-side);
+}
+html[data-mhstudio="on"] .disclaimer{opacity:1;color:var(--st-dim)}
+html[data-mhstudio="on"] .footer strong{color:var(--st-text)}
+
+/* ── Adaptación a pantallas ──────────────────────────────────────────── */
+@media(max-width:1200px){
+  html[data-mhstudio="on"]{--st-side:224px}
+  html[data-mhstudio="on"] .dashboard-grid{grid-template-columns:minmax(300px,320px) minmax(0,1fr)}
+}
+@media(max-width:1024px){
+  html[data-mhstudio="on"]{--st-side:262px}
+  html[data-mhstudio="on"] .menu-btn{display:inline-block}
+  html[data-mhstudio="on"] .st-sidebar{
+    top:var(--st-headpx); transform:translateX(-100%); transition:transform .26s ease;
+    box-shadow:0 0 60px rgba(0,0,0,.6);
+    padding-top:14px; z-index:1100;
+  }
+  html[data-mhstudio="on"] .st-sidebar.st-open{transform:none}
+  html[data-mhstudio="on"] .menu-panel[hidden]{display:none}
+  html[data-mhstudio="on"] .main{margin-left:0;padding:0 18px}
+  html[data-mhstudio="on"] .footer{margin-left:0}
+  html[data-mhstudio="on"] .header{padding:10px 16px}
+  html[data-mhstudio="on"] .header-inner{flex-wrap:wrap;gap:10px}
+  html[data-mhstudio="on"] .st-tools{flex:1 1 100%;justify-content:flex-start;order:3;gap:10px;flex-wrap:nowrap}
+  html[data-mhstudio="on"] .st-search{flex:1 1 auto;max-width:none}
+  html[data-mhstudio="on"] .st-toggle{flex:0 0 auto}
+  html[data-mhstudio="on"] .dashboard-grid{grid-template-columns:minmax(0,1fr)}
+  html[data-mhstudio="on"] .dashboard-grid .st-ctx{grid-column:1;grid-row:auto}
+  html[data-mhstudio="on"] .dashboard-grid .st-hero{grid-column:1;grid-row:auto}
+  html[data-mhstudio="on"] .dashboard-grid .terrain-card{grid-column:1;grid-row:auto}
+  html[data-mhstudio="on"] .dashboard-grid .map-card{grid-column:1;grid-row:auto}
+  html[data-mhstudio="on"] .dashboard-grid .mushroom-cards-grid{grid-column:1;grid-row:auto}
+  html[data-mhstudio="on"] .dashboard-grid .hint-text{grid-column:1;grid-row:auto}
+  html[data-mhstudio="on"] .map-card .map{min-height:min(56vh,460px)}
+  html[data-mhstudio="on"] .st-hero{flex-direction:row;align-items:center;text-align:left;gap:20px}
+  html[data-mhstudio="on"] .st-gauge{flex:0 0 auto;width:150px;height:150px}
+  html[data-mhstudio="on"] .st-gauge-num{font-size:2.2rem}
+  html[data-mhstudio="on"] .st-hero-info{align-items:flex-start}
+  html[data-mhstudio="on"] .st-hero-pills{justify-content:flex-start}
+}
+@media(max-width:768px){
+  html[data-mhstudio="on"] .logo h1{font-size:1.02rem}
+  html[data-mhstudio="on"] .logo h1::after{display:none}
+  html[data-mhstudio="on"] img.logo-icon{width:36px;height:36px}
+  html[data-mhstudio="on"]{--st-head:66px}
+  html[data-mhstudio="on"] .main{padding:0 12px 40px}
+  html[data-mhstudio="on"] .st-ctx{padding:12px 14px}
+  html[data-mhstudio="on"] .st-ctx-place{font-size:1.2rem}
+  html[data-mhstudio="on"] .st-ctx-pills{margin-left:0;width:100%}
+  html[data-mhstudio="on"] .st-hero{flex-direction:column;text-align:center}
+  html[data-mhstudio="on"] .st-hero-info{align-items:stretch;text-align:left}
+  html[data-mhstudio="on"] .st-hero-pills{justify-content:center}
+  html[data-mhstudio="on"] #mushroomCards{grid-template-columns:minmax(0,1fr)}
+  html[data-mhstudio="on"] #fichaGrid{grid-template-columns:minmax(0,1fr)}
+  html[data-mhstudio="on"] .st-toggle{padding:9px 12px}
+  html[data-mhstudio="on"] .st-toggle-txt{font-size:.76rem}
+  html[data-mhstudio="on"] .card{padding:16px}
+  html[data-mhstudio="on"] .footer{padding:20px 12px 12px}
+}
+@media(max-width:480px){
+  html[data-mhstudio="on"] .header{padding:8px 12px}
+  html[data-mhstudio="on"] .st-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
+  html[data-mhstudio="on"] .st-search{min-width:0}
+  html[data-mhstudio="on"] .st-search .search-row{flex-wrap:nowrap;gap:6px}
+  html[data-mhstudio="on"] .st-search .search-row input{flex:1 1 auto;min-width:0;font-size:16px}
+  html[data-mhstudio="on"] .st-search .search-row .btn{padding:9px 12px;font-size:.78rem}
+  html[data-mhstudio="on"] .st-pill{font-size:.68rem;padding:5px 9px}
+  html[data-mhstudio="on"] .st-gauge{width:140px;height:140px}
+  html[data-mhstudio="on"] .conditions-list{padding:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .st-toggle{transition:none}
+  html[data-mhstudio="on"] .st-gauge-fill{transition:none}
+  html[data-mhstudio="on"] .st-sidebar{transition:none}
+}
