@@ -30,10 +30,16 @@
 !img/Lepista_nuda.jpg
 !img/setas-de-cardo.jpg
 
-# --- Datos locales que consume la web (buscador y contorno de MUP) ---
+# --- Datos locales que consume la web ---
+# MUP: buscador y contorno
 !datos_local/
 !datos_local/mup/
 !datos_local/mup/*.gz
 !datos_local/mup/iepf/
 !datos_local/mup/iepf/*.gz
 !datos_local/mup/iepf/mup_iepf_index.json
+# Suelo y altitud (pH/SOC/textura y MDT): motor en local
+!datos_local/*.tif
+# Hábitat/uso MFE: teselas locales
+!datos_local/mfe/
+!datos_local/mfe/**
