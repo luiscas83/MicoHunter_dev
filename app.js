@@ -1420,8 +1420,12 @@ function renderDescripciones(){
       let picoTxt="";
       if(rest!=null&&rest>0){
         const f=new Date();f.setDate(f.getDate()+rest);
-        picoTxt=` y el pico para fructificar sería alrededor de <strong>${rest} días</strong>, sobre el <strong>${f.getDate()} de ${MESES_L[f.getMonth()]}</strong>`;
-        if(restos.length)picoTxt+=` Aún aguantan en el monte restos del pico de hace <strong>${restos[0]} días</strong>.`; // ventana nueva con restos viejos en pie
+        const fTxt=`sobre el <strong>${f.getDate()} de ${MESES_L[f.getMonth()]}</strong>`;
+        if(restos.length){ // ventana nueva con setas del pico anterior aún en pie: se avisa de las dos cosas (v2.101)
+          picoTxt=`. Aunque aún queden setas en el monte del pico de hace <strong>${restos[0]} días</strong>, este nuevo disparador abre otra ventana: puede volver a haber más fructificación en <strong>${rest} días</strong>, ${fTxt}`;
+        }else{
+          picoTxt=` y el pico para fructificar sería alrededor de <strong>${rest} días</strong>, ${fTxt}`;
+        }
       }else if(rest===0){picoTxt=`: el pico de fructificación es <strong>hoy</strong>`;esHoy=true;} // A: pico hoy
       cierre=`debería haber respondido ${trigTxt}${picoTxt}`;
     }
