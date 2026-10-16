@@ -1,0 +1,302 @@
+/* MicoHunter v2.103 — cuarto tema "nature" (cuaderno de campo cartográfico).
+   Claro, plano y científico: papel de mapa frío, verde bosque, ocre y agua.
+   Sin degradados ni sombras (salvo el menú desplegable, por profundidad real).
+   Monospaciada solo para datos, medidas y coordenadas.
+   Mismas clases/IDs que styles.css, dark.css y musgo.css. Hoja autocontenida:
+   se carga tras styles.css y solo se activa al elegir "🍃 Nature". */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#eef3ee;--bg-2:#e4ece3;--bg-subtle:#e7efe5;
+  --surface:#fbfdfa;--surface-2:#f1f7f0;--card-bg:#fbfdfa;
+  --border:#c6d4c2;--border-strong:#8aa088;
+  --primary:#24513a;--primary-light:#35684a;--primary-ink:#16332a;
+  --secondary:#3f6d7a;--accent:#9a5c1e;--accent-fill:#b5762b;--agua:#3f6d7a;
+  --text:#1d2a22;--text-light:#48564b;--text-dim:#48564b;--text-faint:#5c6a5e;
+  --success:#3f7d43;--warning:#8f6415;--danger:#a8452f;--info:#3f6d7a;
+  --shadow:none;--shadow-hover:none;
+  --radius:6px;--radius-sm:4px;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--text);line-height:1.58;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;background-color:var(--bg)}
+::selection{background:var(--primary);color:#f2f8f1}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+/* ── Cabecera ─────────────────────────────────────── */
+.header{position:sticky;top:0;z-index:1000;color:#eef5ee;padding:14px 26px;margin:0 0 22px;
+  background-color:var(--primary);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='200' viewBox='0 0 320 200'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.07' stroke-width='1.2'%3E%3Cpath d='M-20 150 C 40 118 84 176 140 142 S 244 92 340 132'/%3E%3Cpath d='M-20 172 C 46 146 92 198 148 166 S 250 122 340 158'/%3E%3Cpath d='M-20 116 C 44 88 92 138 148 108 S 252 62 340 100'/%3E%3Cpath d='M-20 82 C 50 58 96 100 152 74 S 256 34 340 68'/%3E%3Cpath d='M-20 50 C 52 30 100 64 156 42 S 260 8 340 38'/%3E%3Cpath d='M-20 22 C 54 8 104 32 160 14 S 264 -12 340 12'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:320px 200px;background-position:72% -10px;
+  border-bottom:1px solid rgba(255,255,255,.16)}
+.header :focus-visible{outline:2px solid #cfe4ce;outline-offset:2px}
+.header-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-icon{font-size:26px}
+img.logo-icon{width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,.35)}
+.logo h1{font-family:'Inter',-apple-system,sans-serif;font-size:20px;font-weight:700;letter-spacing:-.01em;color:#f3f9f2}
+.version{margin:2px 0 0;font-family:var(--mono);font-size:.7rem;font-weight:500;letter-spacing:.08em;color:#c2dcbf;font-variant-numeric:tabular-nums}
+.menu-btn{font-size:1.3rem;line-height:1;padding:8px 12px;border:1px solid rgba(255,255,255,.35);border-radius:4px;background:rgba(255,255,255,.1);color:#eef5ee;cursor:pointer;min-height:44px}
+.menu-btn:hover{background:rgba(255,255,255,.2)}
+.menu-panel{position:absolute;top:calc(100% + 6px);left:12px;z-index:1200;display:flex;flex-direction:column;gap:2px;min-width:250px;padding:8px;
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:6px;box-shadow:0 14px 30px rgba(20,40,30,.16)}
+.menu-panel[hidden]{display:none}
+.menu-panel .nav-btn{text-align:left;width:100%}
+.menu-theme{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-top:4px;border-top:1px solid var(--border);font-size:.9rem;font-weight:600;color:var(--text)}
+.menu-theme .theme-select{flex:1}
+.menu-panel .theme-select{background:var(--surface-2);color:var(--text);border:1px solid var(--border-strong);border-radius:4px}
+.theme-select{padding:10px 14px;border:1px solid var(--border-strong);border-radius:4px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;min-height:44px}
+.theme-select option{color:var(--text)}
+
+/* ── Pestañas / navegación ────────────────────────── */
+.nav-btn{padding:10px 14px;border:none;background:transparent;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.9rem;font-weight:500;
+  color:var(--text-light);text-align:left;transition:background .16s,color .16s;min-height:44px}
+.nav-btn:hover{background:var(--surface-2);color:var(--text)}
+.nav-btn.active{background:var(--primary);color:#f2f8f1;font-weight:600}
+
+.main{max-width:1180px;margin:26px auto;padding:0 24px 48px}
+.section{display:none}
+.section.active{display:block;animation:natureSet .32s cubic-bezier(.22,1,.36,1) both}
+@keyframes natureSet{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.section-head{margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.section-head h2{font-size:clamp(22px,2.6vw,30px);font-weight:800;letter-spacing:-.02em;margin-bottom:4px;color:var(--primary)}
+.section-head p{color:var(--text-light);font-size:.9rem;max-width:70ch}
+
+/* ── Paneles (tarjetas) ───────────────────────────── */
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:none;overflow-wrap:break-word;word-break:break-word}
+.card h2{font-size:.72rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.12em;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.card h3{font-size:.72rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:stretch}
+.dashboard-grid .map-card{grid-column:1;grid-row:1;display:flex;flex-direction:column;min-width:0}
+.dashboard-grid .terrain-card{grid-column:2;grid-row:1;align-self:stretch;height:100%;display:flex;flex-direction:column;min-width:0}
+.dashboard-grid .mushroom-cards-grid{grid-column:1/-1;grid-row:2}
+.map-card .map{width:100%;flex:1 1 auto;min-height:420px;border-radius:4px;overflow:hidden;border:1px solid var(--border);z-index:1}
+
+/* ── Buscador / botones ───────────────────────────── */
+.search-row{display:flex;gap:8px;margin-bottom:10px}
+.search-row input{flex:1;min-width:0;padding:11px 14px;border:1px solid var(--border-strong);border-radius:4px;background:#fff;color:var(--text);font-family:inherit;font-size:.9rem}
+.search-row input::placeholder{color:var(--text-faint)}
+.search-row input:focus{outline:2px solid var(--primary);outline-offset:-1px}
+#results{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+#results button{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:8px 12px;font-size:.85rem;text-align:left;cursor:pointer;font-family:inherit;color:var(--text);min-height:44px}
+#results button:hover{background:var(--surface-2)}
+#favSelect{width:100%;padding:11px 14px;border:1px solid var(--border-strong);border-radius:4px;background:#fff;color:var(--text);font-family:inherit;font-size:.9rem;margin:0 0 10px;cursor:pointer}
+#favSelect:focus{outline:2px solid var(--primary);outline-offset:-1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:4px;border:1px solid transparent;
+  background:var(--primary);color:#f2f8f1;font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;min-height:44px;
+  transition:background .18s,color .18s,border-color .18s}
+.btn:hover{background:var(--primary-light)}
+.btn:active{transform:translateY(1px)}
+.btn-ghost{background:transparent;color:var(--primary);border:1px solid var(--border-strong)}
+.btn-ghost:hover{background:var(--surface-2);color:var(--primary-ink)}
+.search-row .btn,.map-actions .btn:not(.btn-ghost){background:var(--primary);color:#f2f8f1;border-color:transparent}
+.btn:focus-visible,.search-row input:focus-visible,.save-fav-row input:focus-visible,#favSelect:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.map-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.map-actions .btn{flex:1;white-space:nowrap}
+.save-fav-panel{margin-top:12px;padding:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px}
+.save-fav-panel[hidden]{display:none}
+.save-fav-label{display:block;margin-bottom:8px;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+.save-fav-row{display:flex;gap:8px}
+.save-fav-row input{flex:1;min-width:0;padding:10px 12px;border:1px solid var(--border-strong);border-radius:4px;background:#fff;color:var(--text);font-family:inherit;font-size:.9rem}
+.save-fav-row .btn{padding:10px 16px;flex:0 0 auto}
+.save-fav-coords{margin:8px 0 0;font-family:var(--mono);font-size:.74rem;color:var(--text-dim);font-variant-numeric:tabular-nums}
+
+/* ── Suelo y clima ────────────────────────────────── */
+.terrain-list{display:flex;flex-direction:column}
+.terrain-item{display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.terrain-item:last-child{border-bottom:none}
+.terrain-item .ti{grid-column:1;grid-row:1/3;align-self:center;font-size:1rem;line-height:1;text-align:left;min-width:0}
+.terrain-item .tl{grid-column:2;grid-row:1;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;line-height:1.4;color:var(--text-dim);margin-bottom:2px;overflow-wrap:break-word}
+.terrain-item .tv{grid-column:2;grid-row:2;font-family:var(--mono);font-size:.84rem;font-weight:500;line-height:1.4;color:var(--primary-ink);font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:break-word}
+.last-update{margin-top:12px;font-family:var(--mono);font-size:.72rem;color:var(--text-faint);text-align:right}
+
+/* ── Tarjetas de seta ─────────────────────────────── */
+.mushroom-cards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+#mushroomCards{grid-template-columns:repeat(2,1fr)}
+#mushroomCards .mushroom-card{grid-column:auto}
+.mushroom-card{text-align:center}
+.mushroom-title-section{display:flex;align-items:center;gap:14px;margin-bottom:18px;text-align:left}
+.mushroom-icon-large{font-size:2.6rem;flex-shrink:0}
+.mushroom-photo{width:84px;height:84px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--border)}
+.mushroom-name{display:block;margin:0;font-size:1.1rem;line-height:1.3;font-weight:700;letter-spacing:-.01em}
+.mushroom-scientific{display:block;font-size:.78rem;color:var(--text-light);font-style:italic;margin:2px 0 0;line-height:1.3}
+.probability-ring{position:relative;width:140px;height:140px;margin:0 auto 16px}
+.probability-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;border:1px dashed var(--border);opacity:.7;pointer-events:none}
+.probability-ring svg{width:100%;height:100%;transform:rotate(-90deg);display:block}
+.ring-bg{fill:none;stroke:#d3dfd0;stroke-width:9}
+.ring-fill{fill:none;stroke:var(--primary);stroke-width:9;stroke-linecap:round;transition:stroke-dasharray .9s cubic-bezier(.22,1,.36,1)}
+.ring-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ring-text .percentage{display:block;font-size:1.9rem;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--primary);font-variant-numeric:tabular-nums}
+.ring-text .label{display:block;margin:5px auto 0;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);background:none;white-space:nowrap}
+#fichaGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+#fichaGrid .card{box-shadow:none}
+.ficha-section{margin-top:20px}
+.ficha-section>h3{font-size:.72rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px}
+.ficha-p{font-size:.88rem;line-height:1.7;color:var(--text-light);margin:0 0 10px;overflow-wrap:break-word}
+.ficha-p strong{color:var(--text)}
+.toxi-box{margin:10px 0;padding:12px 14px;background:#f7ece9;border:1px solid #d9a89e;border-radius:4px;font-size:.85rem;line-height:1.6;color:var(--text)}
+.toxi-box strong{color:var(--danger)}
+.loader{position:fixed;inset:0;background:rgba(18,35,26,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:2000;color:#fff;font-weight:600}
+.loader[hidden]{display:none}
+.loader p{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);padding:8px 18px;border-radius:999px;font-size:.88rem}
+.loading-spinner{width:34px;height:34px;border:3px solid rgba(255,255,255,.25);border-top-color:var(--accent-fill);border-radius:50%;animation:giro 900ms linear infinite}
+@keyframes giro{to{transform:rotate(360deg)}}
+
+/* ── Banner + porqué ──────────────────────────────── */
+.prediction-banner{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:10px;border-radius:4px;font-size:.85rem;font-weight:600;text-align:justify;border:1px solid}
+.prediction-banner::before{content:'';width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:currentColor}
+.prediction-text{flex:1;text-align:justify;hyphens:auto}
+.prediction-banner.nivel-alto,.prediction-banner.nivel-medio{background:#e6f0e5;color:#2b5232;border-color:#a8c6a8}
+.prediction-banner.nivel-bajo{background:#f6efd9;color:#6d5210;border-color:#d9c78a}
+.prediction-banner.nivel-nulo{background:#f6e7e3;color:#8c3a28;border-color:#d9a89e}
+.porque{font-size:.8rem;color:var(--text-dim);margin:0 0 12px;line-height:1.5}
+
+/* ── Condiciones y detalle ────────────────────────── */
+.conditions-list{text-align:left;margin-bottom:6px}
+.condition-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+.condition-item:last-child{border-bottom:none}
+.condition-item>*{min-width:0}
+.condition-value{font-family:var(--mono);font-weight:500;font-variant-numeric:tabular-nums;text-align:left;overflow-wrap:break-word}
+.target{font-weight:400;color:var(--text-faint);font-size:.74rem;white-space:nowrap}
+.condition-status{padding:3px 9px;border-radius:3px;font-size:.7rem;font-weight:700;white-space:nowrap;letter-spacing:.06em;text-transform:uppercase}
+.condition-status.ok{background:#dfeada;color:#2b5232}
+.condition-status.warning{background:#f3e8c2;color:#6d5210}
+.condition-status.danger{background:#f4dcd6;color:#8c3a28}
+.lv-ok{color:var(--success);font-weight:700}
+.lv-mid{color:var(--warning);font-weight:700}
+.lv-bad{color:var(--danger);font-weight:700}
+.mushroom-details{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);text-align:left}
+.mushroom-detail-item{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:7px 0;font-size:.8rem;border-bottom:1px solid var(--border)}
+.mushroom-detail-item:last-child{border-bottom:none}
+.mushroom-detail-item>*{min-width:0}
+.mushroom-detail-label{color:var(--text-dim);font-weight:500;white-space:nowrap}
+.mushroom-detail-value{color:var(--text);text-align:right;flex:1;overflow-wrap:break-word;font-weight:700}
+.mushroom-detail-value.lv-ok{color:var(--success)}
+.mushroom-detail-value.lv-mid{color:var(--warning)}
+.mushroom-detail-value.lv-bad{color:var(--danger)}
+
+/* ── Favoritos, cotos y tablas ────────────────────── */
+.add-fav-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px}
+.add-fav-row input,.add-fav-row select{padding:10px 14px;border:1px solid var(--border-strong);border-radius:4px;font-family:inherit;font-size:.9rem;min-width:0;background:#fff;color:var(--text)}
+.add-fav-row input::placeholder{color:var(--text-faint)}
+.coto-item{align-items:flex-start}
+.coto-detail{font-size:.85rem;line-height:1.55;margin:6px 0}
+.coto-detail small{color:var(--text-light)}
+.hint-text{font-size:.82rem;color:var(--text-dim);font-style:italic;margin-top:12px;line-height:1.6}
+.alert-box{background:#f6e7e3;color:#8c3a28;border:1px solid #d9a89e;border-radius:4px;padding:10px 12px;font-size:.85rem;font-weight:500}
+.favorites-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.favorite-item{display:flex;align-items:center;gap:16px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:4px}
+.favorite-item>*{min-width:0}
+.favorite-icon{font-size:1.4rem}
+.favorite-info{flex:1}
+.favorite-name{font-weight:600;font-size:1rem;margin-bottom:4px}
+.favorite-coords{font-family:var(--mono);font-size:.76rem;color:var(--text-dim)}
+.favorite-actions{display:flex;gap:8px}
+.favorite-btn{padding:8px 14px;border:none;border-radius:4px;cursor:pointer;font-size:.85rem;font-weight:600;font-family:inherit;min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+.favorite-btn.load{background:var(--primary);color:#f2f8f1}
+.favorite-btn.load:hover{background:var(--primary-light)}
+.favorite-btn.delete{background:#f4dcd6;color:var(--danger)}
+.count-badge{display:inline-block;min-width:22px;padding:2px 8px;background:var(--primary);color:#f2f8f1;border-radius:4px;font-family:var(--mono);font-size:.74rem;font-weight:600;vertical-align:middle}
+.method-list{margin:0 0 16px;padding-left:22px;display:flex;flex-direction:column;gap:10px;font-size:.92rem;line-height:1.65;color:var(--text)}
+.method-list strong{color:var(--primary)}
+ol.method-list{list-style:decimal}
+ul.method-list{list-style:disc}
+.hint{margin:12px 0;padding:12px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:.85rem;line-height:1.7;color:var(--text-dim)}
+.card code{padding:1px 5px;background:#e6efe4;border-radius:3px;font-family:var(--mono);font-size:.82em;color:var(--primary-ink)}
+#metodologia .card>h4,#leyenda .card>h4{margin:22px 0 8px;font-size:1rem;font-weight:700;color:var(--primary)}
+#metodologia .card>h4:first-of-type,#leyenda .card>h4:first-of-type{margin-top:16px}
+#metodologia .card>p,#leyenda .card>p{margin:0 0 12px;font-size:.92rem;line-height:1.75}
+.table-wrapper{overflow-x:auto;margin-bottom:12px}
+.param-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:6px}
+.param-table th{text-align:left;font-weight:700;padding:8px 10px;border-bottom:1px solid var(--primary);color:var(--text);white-space:nowrap;vertical-align:bottom;
+  font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+.param-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-light)}
+.param-table td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:.78rem}
+.param-table th.num{text-align:right}
+.glossary{margin:0}
+.glossary dt{margin-top:14px;font-size:.9rem;font-weight:700;color:var(--text)}
+.glossary dt:first-child{margin-top:8px}
+.glossary dd{margin:4px 0 0;padding-left:14px;border-left:1px solid var(--border);font-size:.88rem;line-height:1.7;color:var(--text-light)}
+.glossary dd strong{color:var(--text)}
+.indice-badge{display:inline-block;min-width:42px;padding:4px 10px;border-radius:4px;font-family:var(--mono);font-weight:600;font-size:.82rem;text-align:center}
+.indice-badge.nivel-alto{background:var(--primary);color:#eef7ef}
+.indice-badge.nivel-medio{background:var(--agua);color:#eef7f9}
+.indice-badge.nivel-bajo{background:#e7d3a8;color:#5c4408}
+.indice-badge.nivel-nulo{background:#dde7db;color:#4d5b50}
+
+/* ── Selector de especies ─────────────────────────── */
+.mushroom-selector{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.mushroom-option{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border-strong);border-radius:4px;cursor:pointer;min-width:0;transition:border-color .16s,background .16s}
+.mushroom-option.selected{border-color:var(--primary);background:#e6f0e5}
+.mushroom-option input[type=checkbox]{width:20px;height:20px;flex-shrink:0;margin-top:2px;accent-color:var(--primary);cursor:pointer}
+.mushroom-option-info{flex:1;min-width:0}
+.mushroom-option-name{font-weight:600;font-size:.9rem}
+.mushroom-option-scientific{font-size:.75rem;color:var(--text-light);font-style:italic}
+.mushroom-option.off{opacity:.7}
+.mushroom-option.off .mushroom-option-name{color:var(--text-faint)}
+.sp-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;border:2px solid rgba(29,42,34,.15)}
+.sp-status{margin-top:6px;font-size:.72rem;font-style:italic;color:var(--text-dim);line-height:1.5}
+
+/* ── Pie y superficies del navegador ──────────────── */
+.footer{text-align:center;padding:34px 26px;margin-top:40px;border-top:1px solid var(--border);color:var(--text-faint);font-size:.85rem}
+.footer strong{color:var(--primary)}
+.disclaimer{margin-top:8px;font-size:.8rem;opacity:1}
+.leaflet-popup-content-wrapper{border-radius:4px}
+.leaflet-container{font-family:'Inter',sans-serif}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:5px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--primary-light)}
+.details-flush{border-top:none;padding-top:0;margin-top:0}
+.mt-20{margin-top:20px}
+#dataWarn{grid-column:1/-1}
+
+/* ── Responsive ───────────────────────────────────── */
+@media(max-width:1280px){.main,.header-inner{max-width:none}}
+@media(max-width:1024px){.main{padding:0 16px 48px}.dashboard-grid{grid-template-columns:minmax(0,1fr) 300px;gap:16px}.dashboard-grid .terrain-card{padding:18px}.mushroom-cards-grid{grid-template-columns:repeat(2,1fr)}#mushroomCards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+.header{padding:12px 16px;margin-bottom:12px}
+.logo h1{font-size:17px}
+img.logo-icon{width:48px;height:48px}
+.main{padding:0 12px 88px}
+.nav-btn{white-space:nowrap;padding:10px 16px;font-size:.88rem}
+.dashboard-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+.dashboard-grid .map-card,.dashboard-grid .terrain-card,.dashboard-grid .mushroom-cards-grid{grid-column:1;grid-row:auto}
+.mushroom-cards-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+#mushroomCards,#fichaGrid{grid-template-columns:minmax(0,1fr)}
+.terrain-card{height:auto}
+.section-head h2{font-size:1.4rem}
+.section-head p{font-size:.85rem}
+.map-card .map{min-height:min(58dvh,420px);min-height:min(58vh,420px)}
+.search-row{flex-wrap:nowrap}
+.search-row input{flex:1 1 auto;font-size:16px}
+.search-row .btn{flex:0 0 auto;padding-left:16px;padding-right:16px}
+.map-actions{display:grid;grid-template-columns:1fr 1fr}
+.map-actions .btn{flex:none;white-space:normal;text-align:center}
+.add-fav-row{grid-template-columns:1fr}.add-fav-row .btn{grid-column:auto}
+.favorite-item{flex-direction:row;text-align:left;gap:12px;padding:14px}
+.favorite-actions{flex-wrap:wrap}
+.terrain-item{padding:8px 0}
+.probability-ring{width:124px;height:124px}
+.mushroom-title-section{margin-bottom:14px}
+.mushroom-photo{width:68px;height:68px}
+.footer{padding:20px 12px 12px;margin-top:28px;font-size:.8rem}
+}
+@media(max-width:480px){
+html,body{overflow-x:clip}
+.main{padding:0 12px 88px}
+.card{padding:16px}
+.mushroom-cards-grid .condition-item{flex-direction:row;align-items:center;gap:8px}
+.condition-value{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-start}
+.map-actions{grid-template-columns:1fr 1fr;gap:8px}
+.save-fav-row{flex-wrap:nowrap}
+.save-fav-row input{flex:1 1 auto;font-size:16px}
+.save-fav-row .btn{flex:0 0 auto}
+.add-fav-row input{font-size:16px}
+.glossary dd{padding-left:10px}
+.param-table{font-size:.78rem}
+.param-table th,.param-table td{padding:6px 8px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
