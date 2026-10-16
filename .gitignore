@@ -1,0 +1,39 @@
+# MicoHunter — repositorio solo con lo necesario para que la web funcione.
+# Lista blanca: se ignora todo y se incluye solo lo imprescindible.
+*
+!*/
+!.gitignore
+
+# --- Código de la web ---
+!index.html
+!app.js
+!cotos.js
+!cotos_poly.js
+!mup_extra.js
+!pnsg_res.js
+!styles.css
+!dark.css
+!musgo.css
+
+# --- Imágenes realmente referenciadas por la web ---
+!img/
+!img/edulis.png
+!img/boletus.jpg
+!img/niscalo.webp
+!img/oronja.webp
+!img/chantarela.webp
+!img/Boletus_pinophilus3.JPG
+!img/Boletus_aereusBG.JPG
+!img/Boletus_reticulatus_modified.jpg
+!img/campestris.JPG
+!img/Macrolepiota-procera.jpg
+!img/Lepista_nuda.jpg
+!img/setas-de-cardo.jpg
+
+# --- Datos locales que consume la web (buscador y contorno de MUP) ---
+!datos_local/
+!datos_local/mup/
+!datos_local/mup/*.gz
+!datos_local/mup/iepf/
+!datos_local/mup/iepf/*.gz
+!datos_local/mup/iepf/mup_iepf_index.json
