@@ -1412,10 +1412,14 @@ function renderDescripciones(){
     const trig=vv.trig,rest=vv.rest,past=vv.past,restos=vv.restos;
     const trigTxt=trig?`alrededor del <strong>${trig}</strong>`:`en los últimos días`;
     let cierre="",esHoy=false,esPasado=false;
-    if(past!=null&&past>0){ // B: el pico ya pasó y la seta sigue en el monte (tope = persistencia)
-      const xp=Math.min(past,PERSISTE[e.sp]??30);
-      cierre=`respondió ${trigTxt}: el pico fue hace <strong>${xp} días</strong> y las setas llevan <strong>${xp} días</strong> en el monte`;
-      esPasado=true;
+    if(past!=null&&past>0){ // B: el pico ya pasó; las setas siguen solo si sobrevivieron a helada/calor y caben en persistencia (v2.102)
+      const vivo=restos.includes(past); // restos lista solo picos dentro de persistencia y sin veto por helada/calor
+      const viejos=restos.filter(h=>h>past); // picos anteriores aún en pie (dos episodios separados)
+      cierre=vivo
+        ?`respondió ${trigTxt}: el pico fue hace <strong>${past} días</strong> y las setas llevan <strong>${past} días</strong> en el monte`
+        :`respondió ${trigTxt}: el pico fue hace <strong>${past} días</strong> y ya no quedan setas de aquel pico`;
+      if(vivo&&viejos.length)cierre+=`. Aún pueden quedar restos del pico de hace <strong>${viejos[0]} días</strong>`;
+      esPasado=vivo; // si el flush está muerto, no se pinta como setas disponibles
     }else{
       let picoTxt="";
       if(rest!=null&&rest>0){
