@@ -1,8 +1,12 @@
-/* MicoHunter — QUINTO estilo: «Observatorio» (studio.css)  v1.00
+/* MicoHunter — QUINTO estilo: «Observatorio» (studio.css)  v1.01
    ============================================================================
    Capa de presentación INDEPENDIENTE. Todas las reglas van acotadas a
-   html[data-mhstudio="on"], así que con el estilo apagado este archivo no
-   afecta absolutamente a nada: los cuatro temas viven igual que antes.
+   html[data-mhstudio="on"], así que con el estilo apagado este fichero no
+   afecta a nada: los cuatro temas viven igual que antes.
+
+   Única excepción deliberada: el bloque .st-toggle (el botón de entrada y
+   salida). Tiene que verse también con el estilo apagado, porque es la única
+   puerta de entrada; está en la cabecera, en los cinco modos.
 
    Concepto: observatorio micológico profesional (verde bosque + ámbar),
    paneles de datos con bordes finos, tipografía con carácter (Fraunces) +
@@ -118,18 +122,29 @@ html[data-mhstudio="on"] .map-card #favSelect{
 }
 
 /* Botón de alternancia (también con el estilo apagado: ver bloque .st-toggle) */
+/* Botón de alternancia. Estas reglas son las únicas GLOBALES del fichero
+   (todo lo demás va acotado a html[data-mhstudio="on"]): el botón debe verse
+   y medir bien también en los cuatro temas originales, porque es la única
+   puerta de entrada. Fondo oscuro translúcido para que el texto blanco pase
+   AA sobre cualquier cabecera (peor caso: claro #cf9340 → 5.5:1). */
 .st-toggle{
   display:inline-flex; align-items:center; gap:8px; flex:0 0 auto;
-  padding:9px 14px; min-height:0; cursor:pointer;
-  background:rgba(255,255,255,.12); color:#fff;
-  border:1px solid rgba(255,255,255,.42); border-radius:999px;
+  padding:9px 15px; min-height:38px; cursor:pointer;
+  background:rgba(0,0,0,.34); color:#fff;
+  border:1px solid rgba(255,255,255,.5); border-radius:999px;
   font-family:inherit; font-size:.82rem; font-weight:600; letter-spacing:.02em;
   transition:background .18s ease, border-color .18s ease, color .18s ease;
   white-space:nowrap;
 }
-.st-toggle:hover{background:rgba(255,255,255,.22)}
-.st-toggle:focus-visible{outline:2px solid rgba(255,255,255,.7);outline-offset:2px}
+.st-toggle:hover{background:rgba(0,0,0,.48)}
+.st-toggle:focus-visible{outline:2px solid rgba(255,255,255,.8);outline-offset:2px}
 .st-toggle-ico{font-size:1rem;line-height:1}
+/* En pantallas muy estrechas se queda el icono (el botón conserva su
+   aria-label, así que no pierde nombre accesible). */
+@media(max-width:480px){
+  .st-toggle{padding:9px 12px}
+  .st-toggle .st-toggle-txt{display:none}
+}
 html[data-mhstudio="on"] .st-toggle{
   background:rgba(232,179,65,.14); color:var(--st-amber);
   border-color:rgba(232,179,65,.45);

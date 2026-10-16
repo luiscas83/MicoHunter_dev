@@ -29,6 +29,7 @@
   var on = false, built = false;
   var moved = [], created = [];
   var dom = {};
+  var toggleBtn = null;                              // vive fuera de `dom`: teardown() vacía `dom`
   var obs = null, attrObs = null, raf = 0;
 
   function byId(id) { return document.getElementById(id); }
@@ -69,21 +70,34 @@
     }
   }
 
-  /* ── Botón de alternancia (siempre visible, en la cabecera) ──────────── */
-  function buildToggle() {
-    var b = el("button", "st-toggle");
+  /* ── Botón de alternancia ────────────────────────────────────────────── */
+  /* Se monta UNA sola vez, al cargar y SIEMPRE (no al entrar), y no se
+     registra en `created`: teardown() borra los nodos temporales y la puerta
+     de entrada debe sobrevivir tanto al arranque en frío como a la salida. */
+  function mountToggle() {
+    if (toggleBtn && toggleBtn.parentNode) { updateToggle(); return true; }
+    var headerInner = document.querySelector(".header-inner");
+    if (!headerInner) return false;
+    var b = document.createElement("button");
+    b.className = "st-toggle";
     b.type = "button";
     b.setAttribute("aria-pressed", "false");
+    b.setAttribute("aria-label", "Activar la interfaz Observatorio");
     b.title = "Interfaz «Observatorio»: composición alternativa de la misma app";
     b.innerHTML = '<span class="st-toggle-ico" aria-hidden="true">🔭</span>' +
                   '<span class="st-toggle-txt">Observatorio</span>';
     b.addEventListener("click", function () { toggle(); });
-    return b;
+    toggleBtn = b;
+    headerInner.appendChild(b);
+    updateToggle();
+    return true;
   }
   function updateToggle() {
-    var b = dom.toggle;
+    var b = toggleBtn;
     if (!b) return;
     b.setAttribute("aria-pressed", on ? "true" : "false");
+    b.setAttribute("aria-label", on ? "Salir del observatorio y volver a la interfaz anterior"
+                                    : "Activar la interfaz Observatorio");
     var t = b.querySelector(".st-toggle-txt");
     if (t) t.textContent = on ? "Salir" : "Observatorio";
     b.title = on ? "Volver a la interfaz y al tema anteriores"
@@ -177,12 +191,14 @@
       tools.appendChild(sw);
     }
     if (fav) moveOnce(fav, tools);
-    dom.toggle = buildToggle();
-    tools.appendChild(dom.toggle);
     if (headerInner) headerInner.appendChild(tools);
     dom.tools = tools;
     dom.mapCard = mapCard;
     dom.fav = fav;
+    /* El botón no se crea aquí: se monta al cargar y solo se reubica (así
+       sigue existiendo al salir). moveOnce lo devuelve a la cabecera. */
+    mountToggle();
+    if (toggleBtn && toggleBtn.parentNode !== tools) moveOnce(toggleBtn, tools);
     placeFav();
 
     /* 2 · Barra lateral: el menú real, reordenado. Se conserva el botón ☰
@@ -312,7 +328,7 @@
       if (map && map.parentNode === dom.mapCard) dom.mapCard.insertBefore(dom.fav, map);
       else dom.mapCard.appendChild(dom.fav);
     } else if (!mobile && !inTools) {
-      dom.tools.insertBefore(dom.fav, dom.toggle || null);
+      dom.tools.insertBefore(dom.fav, toggleBtn || null);
     }
   }
 
@@ -354,12 +370,18 @@
     ROOT.style.removeProperty("--st-headpx");
     if (dom.panel) dom.panel.hidden = true;   // estado original del panel
     dom = {};
+    /* La puerta de entrada nunca se va: si el botón quedó suelto, vuelve. */
+    if (toggleBtn && toggleBtn.parentNode !== document.querySelector(".header-inner")) {
+      mountToggle();
+    }
+    updateToggle();
   }
 
   /* ── API pública ─────────────────────────────────────────────────────── */
   function enable() {
     if (on) return;
     on = true;
+    mountToggle();                              // por si aún no existía (p. ej. header tardío)
     ROOT.setAttribute("data-mhstudio", "on");
     applyTheme();
     build();
@@ -413,6 +435,7 @@
   hookThemeSelect();
   function boot() {
     hookThemeSelect();
+    mountToggle();                              // la entrada está siempre disponible
     var want = false;
     try { want = localStorage.getItem(KEY) === "on"; } catch (e) {}
     if (want) enable();
