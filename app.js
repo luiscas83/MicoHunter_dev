@@ -244,13 +244,13 @@ async function getJSON(url,ms,headers,reintento){
 }
 const avg=a=>a.reduce((s,v)=>s+v,0)/a.length;
 const MESES_S=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
-function diasTrig(arr,umb){ // días hacia atrás del primer día de la racha (o del último calificado); null sin disparador
+function diasTrig(arr,umb){ // días hacia atrás del INICIO del último episodio (racha contigua); null sin disparador (v2.100)
   const cal=i=>{let s=0;for(let j=i-13;j<=i;j++)s+=arr[j]??0;return s+2>=umb;};
-  let racha=0;
-  for(let i=arr.length-1;i>=13&&cal(i);i--)racha++;
-  if(racha)return racha-1;
-  for(let d=arr.length-2;d>=13;d--)if(cal(d))return arr.length-1-d;
-  return null;
+  let i=arr.length-1;
+  while(i>=13&&!cal(i))i--;      // día calificado más reciente (hoy o pasado)
+  if(i<13)return null;
+  while(i-1>=13&&cal(i-1))i--;   // retrocede al arranque de su racha
+  return arr.length-1-i;
 }
 function fechaTrig(arr,umb,ancla){
   const d=diasTrig(arr,umb);
@@ -259,23 +259,15 @@ function fechaTrig(arr,umb,ancla){
   return `${f.getDate()} ${MESES_S[f.getMonth()]}`;
 }
 function restantes(arr,lag,umb){ // arr cronológico de lluvia diaria terminando hoy: días que faltan al pico
-  // racha de días seguidos (hasta hoy) con ventana de 14 d por encima del umbral: un solo episodio,
-  // fijado el primer día que se cumplió; si hoy no califica, se busca el último día que sí hacia atrás
-  const cal=i=>{let s=0;for(let j=i-13;j<=i;j++)s+=arr[j]??0;return s+2>=umb;};
-  let racha=0;
-  for(let i=arr.length-1;i>=13&&cal(i);i--)racha++;
-  if(racha)return Math.max(0,lag-(racha-1));
-  for(let d=arr.length-2;d>=13;d--)if(cal(d))return Math.max(0,lag-(arr.length-1-d));
-  return lag; // sin disparador claro: el plazo entero
+  // un solo episodio por racha contigua, fijado el primer día en que se cumplió la ventana de 14 d (v2.100)
+  const d=diasTrig(arr,umb);
+  if(d==null)return lag; // sin disparador claro: el plazo entero
+  return Math.max(0,lag-d);
 }
 function diasPico(arr,lag,umb){ // días desde el pico (0 = hoy, >0 = pasado, <0 = faltan, null sin disparador) (v2.78)
-  // misma racha que restantes() pero sin redondear a 0: el pico pasado se cuenta
-  const cal=i=>{let s=0;for(let j=i-13;j<=i;j++)s+=arr[j]??0;return s+2>=umb;};
-  let racha=0;
-  for(let i=arr.length-1;i>=13&&cal(i);i--)racha++;
-  if(racha)return (racha-1)-lag;
-  for(let d=arr.length-2;d>=13;d--)if(cal(d))return (arr.length-1-d)-lag;
-  return null;
+  // mismo episodio que restantes() pero sin redondear a 0: el pico pasado se cuenta (v2.100)
+  const d=diasTrig(arr,umb);
+  return d==null?null:d-lag;
 }
 // --- Motor v2 siempre (v1 retirado en v2.78): corte por temporada + restos pasados ---
 const MOTOR_V2=true; // permanente; el selector y la rama v1 están eliminados
