@@ -1,4 +1,4 @@
-/* MicoHunter — QUINTO estilo: «Observatorio» (studio.js)  v1.00
+/* MicoHunter — QUINTO estilo: «Observatorio» (studio.js)  v1.02
    ============================================================================
    Capa de presentación INDEPENDIENTE que se activa/desactiva con un botón,
    sin recargar la página y sin tocar el motor de predicción ni los cuatro
@@ -10,9 +10,11 @@
      · Reordena NODOS REALES ya existentes (menú, buscador, tarjetas…) para
        componer la nueva interfaz. Los id no cambian, así que app.js sigue
        funcionando exactamente igual.
-     · Añade dos componentes de SOLO presentación, derivados de datos que el
-       motor ya ha pintado: la franja de contexto y el medidor de potencial.
-       No calcula, no inventa cifras: copia lo que ya está en el DOM.
+     · Añade componentes de SOLO presentación, derivados de datos que el
+       motor ya ha pintado: la franja de contexto, el medidor de potencial y
+       dos estadísticas bajo el mapa (índice por especie y evolución de la
+       lluvia). No calcula, no inventa cifras: copia lo que ya está en el DOM
+       y, cuando falta el dato, muestra un estado vacío.
      · Guarda la preferencia en su propia clave (mh-studio), sin sobrescribir
        «mh-theme» ni ninguna otra preferencia.
    Al desactivarse restaura el orden del DOM y vuelve a encender el tema que
@@ -50,6 +52,17 @@
     if (html != null) e.innerHTML = html;
     created.push(e);
     return e;
+  }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  /* Primer número de un texto ya pintado por el motor ("52 L/m²" → 52).
+     Devuelve null cuando no hay dato ("—"): eso NO es un cero. */
+  function num(t) {
+    var m = String(t == null ? "" : t).replace(",", ".").match(/-?\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : null;
   }
 
   /* ── Tema: al entrar en el observatorio se silencian las hojas de tema
@@ -181,6 +194,7 @@
     var search = document.querySelector("#dashboard .search-row") || document.querySelector(".search-row");
     var results = byId("results");
     var fav = byId("favSelect");
+    var mush = byId("mushroomCards");
 
     /* 1 · Barra superior: buscador real + salto + botón */
     var tools = el("div", "st-tools");
@@ -228,6 +242,15 @@
       grid.insertBefore(hero, mapCard);
       resolveHeroRefs();
       dom.ctx = ctx;
+    }
+
+    /* 4 · Dos paneles de estadística, a todo el ancho, bajo la fila del mapa */
+    if (mush && mush.parentNode) {
+      dom.statsSp = buildStatsSpecies();
+      mush.parentNode.insertBefore(dom.statsSp, mush);
+      dom.statsRain = buildStatsRain();
+      mush.parentNode.insertBefore(dom.statsRain, mush);
+      resolveStatsRefs();
     }
   }
 
@@ -280,10 +303,260 @@
     if (dom.banner) dom.banner.textContent = ban ? ban.textContent : "";
   }
 
+  /* ── Estadísticas de fructificación (solo presentación) ──────────────────
+     Dos paneles bajo la fila del mapa, construidos con datos que el motor YA
+     ha pintado en el DOM. No se calcula ningún índice nuevo ni se inventan
+     cifras: si falta el dato, se muestra un estado vacío.
+       · Panel 1 → índice de potencial por especie (.percentage + nivel) y
+                   reparto por niveles.
+       · Panel 2 → lluvia diaria de la tabla de Meteorología (#metObsBody /
+                   #metFcBody, que se rellena en cada cálculo) y el valor REAL
+                   de la ventana hídrica con su objetivo, leídos de la propia
+                   fila de condiciones de la especie con mayor índice.
+     ─────────────────────────────────────────────────────────────────────── */
+
+  var NIVELLBL = { nulo: "Nulo", regular: "Regular", bueno: "Bueno", excelente: "Excelente" };
+  /* Umbrales del propio motor (app.js): <25 nulo, <50 regular, <75 bueno. */
+  function nivelDe(v) { return v < 25 ? "nulo" : v < 50 ? "regular" : v < 75 ? "bueno" : "excelente"; }
+
+  /* Tarjetas de especie visibles, ordenadas por índice (mismo criterio que
+     el medidor del hero). */
+  function readSpecies() {
+    var out = [], cards = document.querySelectorAll("#mushroomCards .mushroom-card");
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      if (c.style.display === "none") continue;
+      var p = c.querySelector(".percentage");
+      if (!p) continue;
+      var v = num(p.textContent);
+      if (v == null) continue;
+      var lvEl = c.querySelector('[id^="ringNivel"]');
+      var lv = lvEl ? (lvEl.textContent || "").trim().toLowerCase() : "";
+      if (NIVELLBL[lv] == null) lv = nivelDe(v);
+      out.push({
+        card: c, v: v, lvl: lv,
+        name: (c.querySelector(".mushroom-name") || {}).textContent || "",
+        sci: (c.querySelector(".mushroom-scientific") || {}).textContent || ""
+      });
+    }
+    out.sort(function (a, b) { return b.v - a.v; });
+    return out;
+  }
+
+  /* Objetivo y valor reales de la fila «Lluvia 14 días» de una tarjeta. */
+  function rainCondition(card) {
+    if (!card) return null;
+    var items = card.querySelectorAll('[id^="condList"] .condition-item');
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].textContent.indexOf("Lluvia 14") < 0) continue;
+      var tg = items[i].querySelector(".target");
+      var cv = items[i].querySelector(".condition-value");
+      var o = tg ? String(tg.textContent).match(/(\d+)\s*[–-]\s*(\d+)/) : null;
+      var est = "lv-mid";
+      if (cv && cv.classList) {
+        est = cv.classList.contains("lv-ok") ? "lv-ok"
+            : cv.classList.contains("lv-bad") ? "lv-bad" : "lv-mid";
+      }
+      return { obj: o ? [parseInt(o[1], 10), parseInt(o[2], 10)] : null, val: num(cv ? cv.textContent : ""), est: est };
+    }
+    return null;
+  }
+
+  /* Lluvia diaria de las tablas de Meteorología. El orden real se deduce del
+     acumulado (el mayor es el día más reciente), sin depender del formato de
+     fecha ni del cambio de año. */
+  function readRain() {
+    var obs = [], i, rows = document.querySelectorAll("#metObsBody tr");
+    for (i = 0; i < rows.length; i++) {
+      var td = rows[i].children;
+      if (td.length < 4) continue;
+      obs.push({ d: (td[0].textContent || "").trim(), mm: num(td[1].textContent), ac: num(td[3].textContent) });
+    }
+    if (obs.length > 1) {
+      var a = obs[0].ac, b = obs[obs.length - 1].ac, inv;
+      if (a != null && b != null && a !== b) inv = a > b;
+      else {
+        var key = function (s) { var m = String(s).match(/(\d+)\s*\/\s*(\d+)/); return m ? (+m[2]) * 100 + (+m[1]) : 0; };
+        inv = key(obs[0].d) > key(obs[obs.length - 1].d);   // empate (todo a 0): se usa la fecha
+      }
+      if (inv) obs.reverse();                               // venía de más reciente a más antiguo
+    }
+    var fc = [], frows = document.querySelectorAll("#metFcBody tr");
+    for (i = 0; i < frows.length; i++) {
+      var tf = frows[i].children;
+      if (tf.length < 3) continue;
+      fc.push({ d: (tf[0].textContent || "").trim(), mm: num(tf[2].textContent), ac: null });
+    }
+    return { obs: obs, fc: fc };
+  }
+
+  /* Número corto para ejes y rótulos (misma convención que el motor: punto) */
+  function n1(v) { return String(Math.round(v * 10) / 10); }
+
+  function buildStatsSpecies() {
+    var p = el("div", "card st-panel st-panel-sp");
+    p.id = "stStatsSpecies";
+    p.innerHTML =
+      '<div class="st-panel-head">' +
+        '<h2>📊 Estadística de fructificación</h2>' +
+        '<p class="st-panel-sub">Índice de potencial del motor (0–100) de cada especie activa, ordenado de mayor a menor.</p>' +
+      '</div>' +
+      '<div class="st-sp-rows" id="stSpRows"></div>' +
+      '<div class="st-sp-reparto" id="stSpReparto"></div>' +
+      '<p class="st-panel-note">Vista derivada de los índices que ya ha calculado el motor; no es un dato nuevo.</p>';
+    return p;
+  }
+
+  function buildStatsRain() {
+    var p = el("div", "card st-panel st-panel-rain");
+    p.id = "stStatsRain";
+    p.innerHTML =
+      '<div class="st-panel-head">' +
+        '<h2>🌧️ Evolución de la lluvia</h2>' +
+        '<p class="st-panel-sub">Hasta 30 días observados y 7 de previsión del punto analizado. La franja marca los 14 días que usa el motor.</p>' +
+      '</div>' +
+      '<div class="st-rain-wrap">' +
+        '<div class="st-rain-yaxis" id="stRainY" aria-hidden="true"></div>' +
+        '<div class="st-rain-plot" id="stRainPlot"></div>' +
+      '</div>' +
+      '<div class="st-rain-legend">' +
+        '<span class="st-lg-obs">Observado</span>' +
+        '<span class="st-lg-fc">Previsión</span>' +
+        '<span class="st-lg-nd" id="stRainNd" hidden>Sin dato</span>' +
+        '<span class="st-lg-win">Ventana de 14 d del motor</span>' +
+      '</div>' +
+      '<div class="st-rain-window" id="stRainWindow"></div>' +
+      '<p class="st-panel-note">Cada barra es la lluvia diaria ya registrada o prevista (tabla de Meteorología). El valor de la ventana es el que da el motor, no una suma propia.</p>';
+    return p;
+  }
+
+  function resolveStatsRefs() {
+    dom.spRows = byId("stSpRows");
+    dom.spReparto = byId("stSpReparto");
+    dom.rainPlot = byId("stRainPlot");
+    dom.rainY = byId("stRainY");
+    dom.rainWin = byId("stRainWindow");
+    dom.rainNd = byId("stRainNd");
+  }
+
+  function refreshSpeciesStats() {
+    var box = dom.spRows, rep = dom.spReparto;
+    if (!box || !rep) return;
+    var sp = readSpecies();
+    if (!sp.length) {
+      box.innerHTML = '<p class="st-vacio">Sin datos todavía. Pulsa el mapa para analizar un punto.</p>';
+      rep.innerHTML = "";
+      return;
+    }
+    var cuenta = { excelente: 0, bueno: 0, regular: 0, nulo: 0 }, html = "", i;
+    for (i = 0; i < sp.length; i++) {
+      var s = sp[i];
+      cuenta[s.lvl]++;
+      html += '<div class="st-sp-row" data-lvl="' + s.lvl + '">' +
+          '<div class="st-sp-name"><b>' + esc(s.name) + '</b><i>' + esc(s.sci) + '</i></div>' +
+          '<div class="st-sp-bar"><span style="width:' + Math.max(0, Math.min(100, s.v)).toFixed(1) + '%"></span></div>' +
+          '<div class="st-sp-val">' + s.v.toFixed(1) + '</div>' +
+          '<div class="st-sp-lvl">' + NIVELLBL[s.lvl] + '</div>' +
+        '</div>';
+    }
+    box.innerHTML = html;
+
+    var total = sp.length, seg = "", ley = "", orden = ["excelente", "bueno", "regular", "nulo"];
+    for (i = 0; i < orden.length; i++) {
+      var k = orden[i];
+      if (!cuenta[k]) continue;
+      seg += '<span class="st-sg-' + k + '" style="width:' + (cuenta[k] / total * 100).toFixed(1) + '%"></span>';
+      ley += '<span class="st-lg-' + k + '"><b>' + cuenta[k] + '</b> ' + NIVELLBL[k].toLowerCase() + '</span>';
+    }
+    rep.innerHTML = '<div class="st-sp-seg">' + seg + '</div>' +
+      '<div class="st-sp-leyenda">' + ley +
+      '<span class="st-sp-total">' + total + (total === 1 ? " especie con dato" : " especies con dato") + '</span></div>';
+  }
+
+  function refreshRainStats() {
+    var plot = dom.rainPlot;
+    if (!plot) return;
+    var r = readRain(), obs = r.obs.slice(-30), fc = r.fc.slice(0, 7);
+    var cols = obs.concat(fc);
+    if (!cols.length) {
+      plot.innerHTML = '<p class="st-vacio">Sin datos de lluvia todavía. Pulsa el mapa para analizar un punto.</p>';
+      if (dom.rainY) dom.rainY.innerHTML = "";
+      if (dom.rainWin) dom.rainWin.innerHTML = "";
+      if (dom.rainNd) dom.rainNd.hidden = true;
+      return;
+    }
+    var max = 0, nd = 0, i, nObs = obs.length, total = cols.length;
+    for (i = 0; i < total; i++) {
+      if (cols[i].mm == null) { nd++; continue; }
+      if (cols[i].mm > max) max = cols[i].mm;
+    }
+    var scale = Math.max(max, 1) * 1.12;
+    if (dom.rainY) {
+      dom.rainY.innerHTML =
+        '<span style="top:0%">' + n1(scale) + '</span>' +
+        '<span style="top:50%">' + n1(scale / 2) + '</span>' +
+        '<span style="top:100%">0</span>';
+    }
+    var lab = {};
+    for (i = 0; i < total; i += 5) lab[i] = true;
+    if (!lab[total - 1] && (total - 1) % 5 >= 2) lab[total - 1] = true;
+    var winFrom = Math.max(0, nObs - 14), colW = 100 / total, bars = "";
+    for (i = 0; i < total; i++) {
+      var c = cols[i], isFc = i >= nObs;
+      var h = c.mm == null ? 0 : Math.max(0, Math.min(100, c.mm / scale * 100));
+      var inWin = !isFc && i >= winFrom;
+      var txt = c.d + " · " + (c.mm == null ? "sin dato" : c.mm.toFixed(1) + " mm") +
+                (isFc ? " · previsión" : " · observado");
+      bars += '<div class="st-rain-col' + (isFc ? " is-fc" : " is-obs") +
+                (c.mm == null ? " is-nd" : "") + (inWin ? " in-win" : "") + '"' +
+              ' title="' + esc(txt) + '" aria-label="' + esc(txt) + '">' +
+                '<span class="st-rain-bar" style="height:' + h.toFixed(1) + '%"></span>' +
+                (lab[i] ? '<i class="st-rain-xt">' + esc(c.d.replace(/^[^\d]*/, "")) + '</i>' : "") +
+              '</div>';
+    }
+    plot.innerHTML =
+      '<div class="st-rain-grid" aria-hidden="true"><i style="top:0"></i><i style="top:50%"></i><i style="top:100%"></i></div>' +
+      (winFrom < nObs ? '<div class="st-rain-winband" style="left:' + (winFrom * colW).toFixed(2) +
+                        '%;width:' + ((nObs - winFrom) * colW).toFixed(2) + '%"></div>' : "") +
+      bars;
+    plot.setAttribute("role", "img");
+    plot.setAttribute("aria-label", "Lluvia diaria: " + nObs + " días observados y " + (total - nObs) +
+      " de previsión. Los valores exactos están en la tabla de Meteorología.");
+    if (dom.rainNd) dom.rainNd.hidden = nd === 0;
+    if (!dom.rainWin) return;
+
+    /* Ventana hídrica: valor y objetivo REALES de la propia fila de
+       condiciones de la especie con mayor índice (si la tiene). */
+    var sp = readSpecies(), rc = null, spName = "";
+    for (i = 0; i < sp.length && !rc; i++) {
+      var found = rainCondition(sp[i].card);
+      if (found && found.val != null && found.obj) { rc = found; spName = sp[i].name; }
+    }
+    if (!rc) { dom.rainWin.innerHTML = ""; return; }
+    var o1 = rc.obj[0], o2 = rc.obj[1];
+    var top = Math.max(o2 * 1.25, rc.val * 1.08, o2 + 1);
+    var bl = o1 / top * 100, bw = (o2 - o1) / top * 100;
+    var vw = Math.max(0, Math.min(100, rc.val / top * 100));
+    dom.rainWin.innerHTML =
+      '<div class="st-rw-head"><b>Ventana hídrica · últimos 14 días</b>' +
+        '<span>' + esc(spName) + ' · <b>' + rc.val.toFixed(0) + ' L/m²</b> · objetivo ' + o1 + '–' + o2 + ' L/m²</span></div>' +
+      '<div class="st-rw-track">' +
+        '<span class="st-rw-band" style="left:' + bl.toFixed(2) + '%;width:' + bw.toFixed(2) + '%"></span>' +
+        '<span class="st-rw-fill ' + rc.est + '" style="width:' + vw.toFixed(2) + '%"></span>' +
+      '</div>' +
+      '<div class="st-rw-scale"><span>0</span><span>' + Math.round(top) + ' L/m²</span></div>';
+  }
+
+  function refreshStats() {
+    refreshSpeciesStats();
+    refreshRainStats();
+  }
+
   function refreshDerived() {
     if (!built) return;
     refreshMirrors();
     refreshHero();
+    refreshStats();
   }
   function schedule() {
     if (raf) return;
@@ -296,7 +569,9 @@
     var targets = [
       document.querySelector("#dashboard .terrain-list"),
       byId("mushroomCards"),
-      byId("lastUpdate")
+      byId("lastUpdate"),
+      byId("metObsBody"),
+      byId("metFcBody")
     ];
     for (var i = 0; i < targets.length; i++) {
       if (targets[i]) obs.observe(targets[i], { subtree: true, childList: true, characterData: true });
